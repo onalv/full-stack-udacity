@@ -1,6 +1,7 @@
 import media
 import fresh_tomatoes
 
+#different movies
 interstellar = media.Movie( "Interstellar",
                             "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival",
                             "http://static.rogerebert.com/uploads/movie/movie_poster/interstellar-2014/large_lbGGuk9K1kNQqDabaMyFz1L9iTg.jpg",
@@ -36,6 +37,8 @@ the_godfather = media.Movie("The Godfather",
                             "https://images-na.ssl-images-amazon.com/images/M/MV5BZTRmNjQ1ZDYtNDgzMy00OGE0LWE4N2YtNTkzNWQ5ZDhlNGJmL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SY1000_CR0,0,704,1000_AL_.jpg",
                             "https://www.youtube.com/watch?v=sY1S34973zA")
 
+#list of movies
 movies = [interstellar, inception, matrix, django, the_great_gatsby, the_departed, the_godfather]
 
+#generate and open the webpage
 fresh_tomatoes.open_movies_page(movies)
