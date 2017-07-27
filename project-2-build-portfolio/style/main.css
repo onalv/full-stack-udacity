@@ -1,0 +1,79 @@
+body {
+	color: #2d3c49;
+}
+
+h1, h3 {
+	margin-bottom: 0;
+}
+
+h1 {
+	font-size: 48px;
+	font-weight: 300;
+}
+
+header {			
+	background-color: white;			
+}
+
+section {
+	margin-top: 40px;
+}
+
+section#projects {
+	text-align: center;
+}
+
+footer {
+	background-color: darkgray;
+	padding-top: 40px;
+	height: 100px;
+	margin-top: 40px;
+	color: white;
+}
+
+.img-logo {
+	max-width: 180px;
+}
+
+.div-header {				
+	border-bottom: solid #7d97ad 3px;							
+}
+
+.div-name {
+	text-align: right;
+}
+
+.div-image {
+	height: 200px;
+	overflow: hidden;
+}
+
+.div-footer {
+	text-align: center;
+}
+
+#featured-work {
+	margin-top: 40px;
+	color: #7d97ad;
+	text-align:  left;
+}
+
+/* Media customized responsiveness */
+@media screen and (max-width: 500px) {
+	.img-logo {
+		width: 100px;
+	}
+
+	h1 {
+		font-size: 24px;
+		font-weight: 300;
+	}	
+
+	h2 {
+		font-size: 22px;
+	}
+
+	h3 {
+		font-size: 20px;
+	}
+}
