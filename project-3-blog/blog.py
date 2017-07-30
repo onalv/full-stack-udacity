@@ -14,7 +14,7 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                autoescape = True)
 
-secret = 'fart'
+secret = 'asF232%#.-SASDafubf22a3"$#'
 
 def render_str(template, **params):
     t = jinja_env.get_template(template)
@@ -170,6 +170,7 @@ class NewPost(BlogHandler):
 
 
 ###### Unit 2 HW's
+"""
 class Rot13(BlogHandler):
     def get(self):
         self.render('rot13-form.html')
@@ -182,7 +183,7 @@ class Rot13(BlogHandler):
 
         self.render('rot13-form.html', text = rot13)
 
-
+"""
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
@@ -231,11 +232,11 @@ class Signup(BlogHandler):
 
     def done(self, *a, **kw):
         raise NotImplementedError
-
+'''
 class Unit2Signup(Signup):
     def done(self):
         self.redirect('/unit2/welcome?username=' + self.username)
-
+'''
 class Register(Signup):
     def done(self):
         #make sure the user doesn't already exist
@@ -277,7 +278,7 @@ class Unit3Welcome(BlogHandler):
             self.render('welcome.html', username = self.user.name)
         else:
             self.redirect('/signup')
-
+"""
 class Welcome(BlogHandler):
     def get(self):
         username = self.request.get('username')
@@ -285,11 +286,11 @@ class Welcome(BlogHandler):
             self.render('welcome.html', username = username)
         else:
             self.redirect('/unit2/signup')
-
+"""
 app = webapp2.WSGIApplication([('/', MainPage),
-                               ('/unit2/rot13', Rot13),
-                               ('/unit2/signup', Unit2Signup),
-                               ('/unit2/welcome', Welcome),
+                               #('/unit2/rot13', Rot13),
+                               #('/unit2/signup', Unit2Signup),
+                               #('/unit2/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
