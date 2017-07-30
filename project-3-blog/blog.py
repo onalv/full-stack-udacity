@@ -66,7 +66,7 @@ def render_post(response, post):
 
 class MainPage(BlogHandler):
   def get(self):
-      self.write('Hello, Udacity!')
+      self.write('Hello, Blog!')
 
 
 ##### user stuff
