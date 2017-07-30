@@ -66,7 +66,8 @@ def render_post(response, post):
 
 class MainPage(BlogHandler):
   def get(self):
-      self.write('Hello, Blog!')
+      #self.write('Hello, Blog!')
+      self.redirect("/blog")
 
 
 ##### user stuff
@@ -249,7 +250,8 @@ class Register(Signup):
             u.put()
 
             self.login(u)
-            self.redirect('/blog')
+            #self.redirect('/blog')
+            self.redirect('/welcome')
 
 class Login(BlogHandler):
     def get(self):
@@ -262,7 +264,8 @@ class Login(BlogHandler):
         u = User.login(username, password)
         if u:
             self.login(u)
-            self.redirect('/blog')
+            #self.redirect('/blog')
+            self.redirect('/welcome')
         else:
             msg = 'Invalid login'
             self.render('login-form.html', error = msg)
@@ -272,12 +275,20 @@ class Logout(BlogHandler):
         self.logout()
         self.redirect('/blog')
 
+class Welcome(BlogHandler):
+    def get(self):
+        if self.user:
+            self.render('welcome.html', username = self.user.name)
+        else:
+            self.redirect('/signup')
+"""
 class Unit3Welcome(BlogHandler):
     def get(self):
         if self.user:
             self.render('welcome.html', username = self.user.name)
         else:
             self.redirect('/signup')
+"""
 """
 class Welcome(BlogHandler):
     def get(self):
@@ -291,12 +302,13 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                #('/unit2/rot13', Rot13),
                                #('/unit2/signup', Unit2Signup),
                                #('/unit2/welcome', Welcome),
+                               ('/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout),
-                               ('/unit3/welcome', Unit3Welcome),
+                               #('/unit3/welcome', Unit3Welcome),
                                ],
                               debug=True)
