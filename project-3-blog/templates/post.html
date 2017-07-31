@@ -15,17 +15,9 @@
 
   <h2>Created by: {{p.created_by}}</h2>
 
-  <div>
-    {{p.uid}}
-  </div>
-
-  <div>
-    {{p.udb}}
-  </div>
-
   <input type="text" name="id" value="{{p.key().id()}}">
 
-  <a href="/blog/editpost"><button>Edit Post</button></a>
+  <a href="/blog/editpost/{{p.key().id()}}"><button>Edit Post</button></a>
   <a href="/blog/deletepost/{{p.key().id()}}" class="btn btn-danger">Delete Post</a>
 
 

@@ -144,20 +144,13 @@ class PostPage(BlogHandler):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
-        #anadido por mi para pruebas
-        uid = self.read_secure_cookie('user_id')
-        udb = User.by_id(int(uid))
-        #hasta aqui
-
         if not post:
             self.error(404)
             return
 
-        self.render("permalink.html", post = post, uid = uid, udb = udb)
+        self.render("permalink.html", post = post)
 
 class NewPost(BlogHandler):
-    #username = User.name
-
     def get(self):
         if self.user:
             self.render("newpost.html")
@@ -180,7 +173,7 @@ class NewPost(BlogHandler):
         else:
             error = "subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
-"""
+
 class EditPost(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
@@ -190,23 +183,30 @@ class EditPost(BlogHandler):
             self.error(404)
             return
 
-        self.render("edit.html", post = post)
+        self.render("edit.html", p = post)
     
-    #def get(self):
-        #if not self.user:
-            #self.redirect('/blog')
+    def post(self, post_id):
+        if not self.user:
+            self.redirect('/blog')
 
-        #e.subject = p.subject
-        #content = self.request.get('content')
-        #e = Post(parent = blog_key())
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
 
-        #if subject and content:
-            #p = Post(parent = blog_key(), subject = subject, content = content)
-            #p.put()
-            #self.redirect('/blog/%s' % str(p.key().id()))
+        if self.user.name==post.created_by:
+            subject = self.request.get('subject')
+            content = self.request.get('content')
 
-        #self.render("edit.html")
-"""
+            if subject and content:
+                post.subject = subject
+                post.content = content
+                post.put()
+                self.redirect('/blog/%s' % str(post.key().id()))
+            else:
+                error = "subject and content, please!"
+                #revisar linea de abajo
+                self.render("edit.html", subject=subject, content=content, error=error)
+        else: 
+            self.write('That is not possible my friend')
 
 class DeletePost(BlogHandler):
     def get(self, post_id):
@@ -219,33 +219,6 @@ class DeletePost(BlogHandler):
         else: 
             self.write('That is not possible my friend')
         
-        #id = p.key().id()
-        #if self.user:
-            
-            #self.redirect('/{{key}}')
-            #self.response.write(str(id))
-
-        #if not post:
-        #    self.error(404)
-        #    return
-
-        #self.render("permalink.html", post = post)
-
-###### Unit 2 HW's
-"""
-class Rot13(BlogHandler):
-    def get(self):
-        self.render('rot13-form.html')
-
-    def post(self):
-        rot13 = ''
-        text = self.request.get('text')
-        if text:
-            rot13 = text.encode('rot13')
-
-        self.render('rot13-form.html', text = rot13)
-
-"""
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
@@ -294,11 +267,7 @@ class Signup(BlogHandler):
 
     def done(self, *a, **kw):
         raise NotImplementedError
-'''
-class Unit2Signup(Signup):
-    def done(self):
-        self.redirect('/unit2/welcome?username=' + self.username)
-'''
+
 class Register(Signup):
     def done(self):
         #make sure the user doesn't already exist
@@ -342,14 +311,7 @@ class Welcome(BlogHandler):
             self.render('welcome.html', username = self.user.name)
         else:
             self.redirect('/signup')
-"""
-class Unit3Welcome(BlogHandler):
-    def get(self):
-        if self.user:
-            self.render('welcome.html', username = self.user.name)
-        else:
-            self.redirect('/signup')
-"""
+
 """
 class Welcome(BlogHandler):
     def get(self):
@@ -360,18 +322,15 @@ class Welcome(BlogHandler):
             self.redirect('/unit2/signup')
 """
 app = webapp2.WSGIApplication([('/', MainPage),
-                               #('/unit2/rot13', Rot13),
-                               #('/unit2/signup', Unit2Signup),
                                #('/unit2/welcome', Welcome),
                                ('/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
                                ('/blog/deletepost/([0-9]+)', DeletePost),
-                               #('/blog/editpost/([0-9]+)', EditPost),
+                               ('/blog/editpost/([0-9]+)', EditPost),
                                ('/signup', Register),
                                ('/login', Login),
-                               ('/logout', Logout),
-                               #('/unit3/welcome', Unit3Welcome),
+                               ('/logout', Logout)
                                ],
                               debug=True)
