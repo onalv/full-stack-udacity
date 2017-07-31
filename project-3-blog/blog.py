@@ -9,6 +9,7 @@ import webapp2
 import jinja2
 
 from google.appengine.ext import db
+from google.appengine.api import users
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -132,6 +133,8 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
+    created_by = db.StringProperty(required = True)    
+
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
@@ -141,13 +144,20 @@ class PostPage(BlogHandler):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
+        #anadido por mi para pruebas
+        uid = self.read_secure_cookie('user_id')
+        udb = User.by_id(int(uid))
+        #hasta aqui
+
         if not post:
             self.error(404)
             return
 
-        self.render("permalink.html", post = post)
+        self.render("permalink.html", post = post, uid = uid, udb = udb)
 
 class NewPost(BlogHandler):
+    #username = User.name
+
     def get(self):
         if self.user:
             self.render("newpost.html")
@@ -161,8 +171,10 @@ class NewPost(BlogHandler):
         subject = self.request.get('subject')
         content = self.request.get('content')
 
+        created_by = self.user.name
+
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content)
+            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -201,8 +213,11 @@ class DeletePost(BlogHandler):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
-        post.delete()
-        self.redirect('/blog')
+        if self.user and self.user.name==post.created_by:
+            post.delete()
+            self.redirect('/blog')
+        else: 
+            self.write('That is not possible my friend')
         
         #id = p.key().id()
         #if self.user:
