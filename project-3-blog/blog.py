@@ -118,6 +118,11 @@ class User(db.Model):
 
 ##### blog stuff
 
+class BlogFront(BlogHandler):
+    def get(self):
+        posts = greetings = Post.all().order('-created')
+        self.render('front.html', posts = posts)
+
 def blog_key(name = 'default'):
     return db.Key.from_path('blogs', name)
 
@@ -130,11 +135,6 @@ class Post(db.Model):
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
-
-class BlogFront(BlogHandler):
-    def get(self):
-        posts = greetings = Post.all().order('-created')
-        self.render('front.html', posts = posts)
 
 class PostPage(BlogHandler):
     def get(self, post_id):
@@ -168,7 +168,53 @@ class NewPost(BlogHandler):
         else:
             error = "subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
+"""
+class EditPost(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
 
+        if not post:
+            self.error(404)
+            return
+
+        self.render("edit.html", post = post)
+    
+    #def get(self):
+        #if not self.user:
+            #self.redirect('/blog')
+
+        #e.subject = p.subject
+        #content = self.request.get('content')
+        #e = Post(parent = blog_key())
+
+        #if subject and content:
+            #p = Post(parent = blog_key(), subject = subject, content = content)
+            #p.put()
+            #self.redirect('/blog/%s' % str(p.key().id()))
+
+        #self.render("edit.html")
+"""
+
+class DeletePost(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        post.delete()
+        self.redirect('/blog')
+        
+        #id = p.key().id()
+        #if self.user:
+            
+            #self.redirect('/{{key}}')
+            #self.response.write(str(id))
+
+        #if not post:
+        #    self.error(404)
+        #    return
+
+        #self.render("permalink.html", post = post)
 
 ###### Unit 2 HW's
 """
@@ -306,6 +352,8 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
                                ('/blog/newpost', NewPost),
+                               ('/blog/deletepost/([0-9]+)', DeletePost),
+                               #('/blog/editpost/([0-9]+)', EditPost),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout),
