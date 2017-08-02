@@ -133,7 +133,10 @@ class Post(db.Model):
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
 
-    created_by = db.StringProperty(required = True)    
+    #created by me
+    created_by = db.StringProperty(required = True)
+    number_likes = db.IntegerProperty(required = True) 
+    liked_by = db.StringListProperty()   
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
@@ -165,9 +168,11 @@ class NewPost(BlogHandler):
         content = self.request.get('content')
 
         created_by = self.user.name
+        number_likes = 0
+        liked_by = []
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by)
+            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by, number_likes = number_likes, liked_by = liked_by)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -218,6 +223,24 @@ class DeletePost(BlogHandler):
             self.redirect('/blog')
         else: 
             self.write('That is not possible my friend')
+
+class LikePost(BlogHandler):
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        #if is not own post and post haven't been already given a like by actual user then like post
+        if self.user.name != post.created_by and self.user.name not in post.liked_by:
+            post.number_likes = post.number_likes + 1
+            post.liked_by.append(self.user.name)
+            post.put()
+
+            self.redirect('/blog/%s' % str(post.key().id()))
+        else:
+            self.write('That is not possible my friend')
+        
+        #self.redirect('/blog/%s' % str(post.key().id()))
+
         
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -329,6 +352,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/newpost', NewPost),
                                ('/blog/deletepost/([0-9]+)', DeletePost),
                                ('/blog/editpost/([0-9]+)', EditPost),
+                               ('/blog/likepost/([0-9]+)', LikePost),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout)

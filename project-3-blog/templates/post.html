@@ -13,13 +13,17 @@
     {{p._render_text | safe}}
   </div>
 
+  <h3>{{p.number_likes}}</h3>
+  <h3>Likes by:</h3>
+  <p>{{p.liked_by}}</p>
+
   <h2>Created by: {{p.created_by}}</h2>
 
   <input type="text" name="id" value="{{p.key().id()}}">
 
   <a href="/blog/editpost/{{p.key().id()}}"><button>Edit Post</button></a>
   <a href="/blog/deletepost/{{p.key().id()}}" class="btn btn-danger">Delete Post</a>
-
+  <a href="/blog/likepost/{{p.key().id()}}" class="btn btn-info">Like Post</a>
 
   <a href="/blog/{{p.key().id()}}" class="btn btn-success">View Post</a>
 
