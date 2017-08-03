@@ -136,7 +136,8 @@ class Post(db.Model):
     #created by me
     created_by = db.StringProperty(required = True)
     number_likes = db.IntegerProperty(required = True) 
-    liked_by = db.StringListProperty()   
+    liked_by = db.StringListProperty(required = True) 
+    comments = db.ListProperty(db.Text, required = True)  
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
@@ -166,13 +167,16 @@ class NewPost(BlogHandler):
 
         subject = self.request.get('subject')
         content = self.request.get('content')
+        #first_comment = self.request.get('comment')
 
         created_by = self.user.name
         number_likes = 0
         liked_by = []
+        comments = []
+        #comments.append(first_comment)
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by, number_likes = number_likes, liked_by = liked_by)
+            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by, number_likes = number_likes, liked_by = liked_by, comments = comments)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -200,10 +204,12 @@ class EditPost(BlogHandler):
         if self.user.name==post.created_by:
             subject = self.request.get('subject')
             content = self.request.get('content')
+            comment = db.Text(self.request.get('comment'))
 
             if subject and content:
                 post.subject = subject
                 post.content = content
+                post.comments.append(comment)
                 post.put()
                 self.redirect('/blog/%s' % str(post.key().id()))
             else:
@@ -223,6 +229,22 @@ class DeletePost(BlogHandler):
             self.redirect('/blog')
         else: 
             self.write('That is not possible my friend')
+
+class DeleteComment(BlogHandler):
+    def get(self, post_id, comment_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        post.comments.pop(int(comment_id))
+        post.put()
+        self.redirect('/blog/%s' % str(post.key().id()))
+        """
+        if self.user and self.user.name==post.created_by:
+            post.delete()
+            self.redirect('/blog')
+        else: 
+            self.write('That is not possible my friend')
+        """
 
 class LikePost(BlogHandler):
     def get(self, post_id):
@@ -353,6 +375,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/deletepost/([0-9]+)', DeletePost),
                                ('/blog/editpost/([0-9]+)', EditPost),
                                ('/blog/likepost/([0-9]+)', LikePost),
+                               ('/blog/deletecomment/([0-9]+)/([0-9]+)', DeleteComment),
                                ('/signup', Register),
                                ('/login', Login),
                                ('/logout', Logout)

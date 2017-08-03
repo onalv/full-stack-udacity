@@ -17,6 +17,10 @@
   <h3>Likes by:</h3>
   <p>{{p.liked_by}}</p>
 
+  {% for comment in p.comments %}
+    <textarea name="comment" cols="60" rows="6" id="{{loop.index - 1}}"> {{comment}}</textarea><a href="/blog/deletecomment/{{p.key().id()}}/{{loop.index - 1}}">Delete comment</a><br>   
+  {% endfor %}
+
   <h2>Created by: {{p.created_by}}</h2>
 
   <input type="text" name="id" value="{{p.key().id()}}">
