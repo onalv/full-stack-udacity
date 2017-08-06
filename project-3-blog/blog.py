@@ -150,9 +150,9 @@ class Comment(db.Model):
     created_by = db.StringProperty(required = True)
     post_parent = db.IntegerProperty(required = True)
 
-    def render(self):
-        self._render_text = self.content.replace('\n', '<br>')
-        return render_str("comment.html", p = self)
+    #def render(self):
+        #self._render_text = self.content.replace('\n', '<br>')
+        #return render_str("comment.html", p = self)
 """
 class PostPage(BlogHandler):
     def get(self, post_id):
@@ -164,7 +164,6 @@ class PostPage(BlogHandler):
             return
 
         self.render("permalink.html", post = post)
-        #self.render("permalink.html", post = post, comments = comments)
 
 class NewPost(BlogHandler):
     def get(self):
@@ -229,7 +228,8 @@ class EditPost(BlogHandler):
                 #revisar linea de abajo
                 self.render("edit.html", subject=subject, content=content, error=error)
         else: 
-            self.write('That is not possible my friend')
+            error = 'That is not possible. You did not create this Post. Only author can edit it!'
+            self.render("error.html", error = error)
 
 class DeletePost(BlogHandler):
     def get(self, post_id):
@@ -240,7 +240,8 @@ class DeletePost(BlogHandler):
             post.delete()
             self.redirect('/blog')
         else: 
-            self.write('That is not possible my friend')
+            error = 'That is not possible. You did not create this Post. Only author can delete it!'
+            self.render("error.html", error = error)
 
 class AddComment(BlogHandler): 
     def get(self, post_id):
@@ -261,7 +262,7 @@ class AddComment(BlogHandler):
         post = db.get(key)
 
         comment = db.Text(self.request.get('comment'))
-        
+
         if comment:
             post.comments.append(comment)
             post.put()
@@ -275,13 +276,6 @@ class DeleteComment(BlogHandler):
         post.comments.pop(int(comment_id))
         post.put()
         self.redirect('/blog/%s' % str(post.key().id()))
-        """
-        if self.user and self.user.name==post.created_by:
-            post.delete()
-            self.redirect('/blog')
-        else: 
-            self.write('That is not possible my friend')
-        """
 
 class LikePost(BlogHandler):
     def get(self, post_id):
@@ -296,11 +290,9 @@ class LikePost(BlogHandler):
 
             self.redirect('/blog/%s' % str(post.key().id()))
         else:
-            self.write('That is not possible my friend')
-        
-        #self.redirect('/blog/%s' % str(post.key().id()))
+            error = 'That is not possible. You can not like your own post neither can you like a post more than once!'
+            self.render("error.html", error = error)
 
-        
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
     return username and USER_RE.match(username)
@@ -394,17 +386,7 @@ class Welcome(BlogHandler):
         else:
             self.redirect('/signup')
 
-"""
-class Welcome(BlogHandler):
-    def get(self):
-        username = self.request.get('username')
-        if valid_username(username):
-            self.render('welcome.html', username = username)
-        else:
-            self.redirect('/unit2/signup')
-"""
 app = webapp2.WSGIApplication([('/', MainPage),
-                               #('/unit2/welcome', Welcome),
                                ('/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
