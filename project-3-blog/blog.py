@@ -142,7 +142,18 @@ class Post(db.Model):
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
         return render_str("post.html", p = self)
+"""
+class Comment(db.Model):
+    content = db.StringProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+    last_modified = db.DataTimeProperty(auto_now = True)
+    created_by = db.StringProperty(required = True)
+    post_parent = db.IntegerProperty(required = True)
 
+    def render(self):
+        self._render_text = self.content.replace('\n', '<br>')
+        return render_str("comment.html", p = self)
+"""
 class PostPage(BlogHandler):
     def get(self, post_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
@@ -153,6 +164,7 @@ class PostPage(BlogHandler):
             return
 
         self.render("permalink.html", post = post)
+        #self.render("permalink.html", post = post, comments = comments)
 
 class NewPost(BlogHandler):
     def get(self):

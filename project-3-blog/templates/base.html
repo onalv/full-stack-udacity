@@ -9,14 +9,100 @@
 
   <meta name="description" content="">
   <meta name="author" content="">
-  <link rel="icon" href="../../favicon.ico">
 
   <title>Multi-User Blog</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 
 <body>
-  
+
+  <div class="blog-masthead">
+    <div class="container">
+      <nav class="blog-nav">
+        <a class="blog-nav-item active" href="/">Home</a>
+        <a class="blog-nav-item" href="/blog/newpost">New Post</a>
+
+        {% if user %}
+          {{user.name}} (<a class="blog-nav-item" href="/logout">Log Out</a>)
+        {% else %}
+          <a class="blog-nav-item" href="/login">Log In</a>
+          |
+          <a class="blog-nav-item" href="/signup">Sign Up</a>
+        {% endif %}
+
+        <a class="blog-nav-item" href="/about">About</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="blog-header">
+      <h1 class="blog-title">Multi-User Blog</h1>
+      <p class="lead blog-description">Web page made for the Full Stack Nanodegree from Udacity.com</p>
+    </div>
+
+    <div class="row">
+ 
+      <div id="content" class="col-sm-8 blog-main">
+        {% block content %}
+        {% endblock %}
+      </div>
+
+
+
+      <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+        <div class="sidebar-module sidebar-module-inset">
+          <h4>About</h4>
+          <p>Welcome to the Multi-User Blog, the platform where everyone can share ideas, feelings and thoughts. Be free and express yourself, connect with other people and let your imagination florish!</p>
+        </div>
+        <div class="sidebar-module">
+          <h4>Archives</h4>
+          <ol class="list-unstyled">
+            <li><a href="#">March 2014</a></li>
+            <li><a href="#">February 2014</a></li>
+            <li><a href="#">January 2014</a></li>
+            <li><a href="#">December 2013</a></li>
+            <li><a href="#">November 2013</a></li>
+            <li><a href="#">October 2013</a></li>
+            <li><a href="#">September 2013</a></li>
+            <li><a href="#">August 2013</a></li>
+            <li><a href="#">July 2013</a></li>
+            <li><a href="#">June 2013</a></li>
+            <li><a href="#">May 2013</a></li>
+            <li><a href="#">April 2013</a></li>
+          </ol>
+        </div>
+        <div class="sidebar-module">
+          <h4>Elsewhere</h4>
+          <ol class="list-unstyled">
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Facebook</a></li>
+          </ol>
+        </div>
+      </div><!-- /.blog-sidebar -->
+
+    </div><!-- /.row -->
+
+  </div><!-- /.container -->
+
+  <footer class="blog-footer">
+    <p>&copy; Omar Nava 2017. Project built for <a href="https://www.udacity.com/" target="_blank">Udacity</a> Full Stack Nanodegree</p>
+    <p>
+      <a href="#">Back to top</a>
+    </p>
+  </footer>
+
+
+
+
+
+
+
+
+
+ <!-- 
   <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
       <div class="navbar-header">
@@ -38,7 +124,7 @@
           </div>
           <button type="submit" class="btn btn-success">Sign in</button>
         </form>
-      </div><!--/.navbar-collapse -->
+      </div>
     </div>
   </nav>
   
@@ -50,48 +136,13 @@
     </div>
   </div>
 
-
-
-
-  <div class="login-area">
-    {% if user %}
-      {{user.name}} (<a class="login-link" href="/logout">logout</a>)
-    {% else %}
-      <a class="login-link" href="/login">login</a>
-      |
-      <a class="login-link" href="/signup">signup</a>
-    {% endif %}
-  </div>
-
-  <div id="content">
-  {% block content %}
-  {% endblock %}
-  </div>
+  -->
 
 
 
 
-    <div class="container">
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="col-md-6">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-        </div>
-        <div class="col-md-6">
-          <h2>Heading</h2>
-          <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn btn-default" href="#" role="button">View details &raquo;</a></p>
-       </div>
-      </div>
 
-      <hr>
 
-      <footer>
-        <p>&copy; 2016 Company, Inc.</p>
-      </footer>
-    </div> <!-- /container -->
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
