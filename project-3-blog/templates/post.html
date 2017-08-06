@@ -3,10 +3,20 @@
   <p class="blog-post-meta">{{p.created.strftime("%b %d, %Y")}} by {{p.created_by}}</p>
   <p>{{p._render_text | safe}}</p>
   <span class="btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {{p.number_likes}}</span>
+
+  {% if p.comments %}
+    {% for comment in p.comments %}
+      <h4>Comment #{{loop.index}}</h4>
+      <p class="bg-info p-comment" id="{{loop.index}}">{{comment}}</p>
+      <a href="/blog/deletecomment/{{p.key().id()}}/{{loop.index - 1}}" class="btn btn-warning btn-sm">Delete comment</a>
+    {% endfor %}
+  {% endif %}
+
   <hr>
   <a href="/blog/{{p.key().id()}}" class="btn btn-primary">View Post</a>
   <a href="/blog/editpost/{{p.key().id()}}" class="btn btn-warning">Edit Post</a>
   <a href="/blog/likepost/{{p.key().id()}}" class="btn btn-info">Like Post</a>
+  <a href="/blog/addcomment/{{p.key().id()}}" class="btn btn-success">Add comment</a>
   <a href="/blog/deletepost/{{p.key().id()}}" class="btn btn-danger">Delete Post</a>
 </div><!-- /.blog-post -->
 

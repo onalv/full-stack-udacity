@@ -192,6 +192,12 @@ div.error.bg-danger {
   margin-bottom: 40px;
 }
 
+.p-comment {
+  margin: 10px 0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: dimgray;
+}
 
 /*
 Previous

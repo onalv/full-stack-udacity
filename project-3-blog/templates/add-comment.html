@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="blog-post">
+  
+    <h2 class="blog-post-title">{{p.subject}}</h2>
+    <p class="blog-post-meta">{{p.created.strftime("%b %d, %Y")}} by {{p.created_by}}</p>
+    <p>{{p.content}}</p>
+    <span class="btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {{p.number_likes}}</span>
+    <hr>
+
+    <form method="post">
+      <div class="form-group">
+        <label>Add comment</label>
+        <textarea class="form-control" name="comment"></textarea>
+      </div>
+      <div class="error">{{error}}</div>
+      <input type="submit" class="btn btn-primary btn-lg">
+    </form>
+
+  </div>
+
+{% endblock %}

@@ -216,12 +216,12 @@ class EditPost(BlogHandler):
         if self.user.name==post.created_by:
             subject = self.request.get('subject')
             content = self.request.get('content')
-            comment = db.Text(self.request.get('comment'))
+            #comment = db.Text(self.request.get('comment'))
 
             if subject and content:
                 post.subject = subject
                 post.content = content
-                post.comments.append(comment)
+                #post.comments.append(comment)
                 post.put()
                 self.redirect('/blog/%s' % str(post.key().id()))
             else:
@@ -242,6 +242,31 @@ class DeletePost(BlogHandler):
         else: 
             self.write('That is not possible my friend')
 
+class AddComment(BlogHandler): 
+    def get(self, post_id):
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        if not post:
+            self.error(404)
+            return
+
+        self.render("add-comment.html", p = post)
+
+    def post(self, post_id):
+        if not self.user:
+            self.redirect('/blog')
+
+        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+        post = db.get(key)
+
+        comment = db.Text(self.request.get('comment'))
+        
+        if comment:
+            post.comments.append(comment)
+            post.put()
+            self.redirect('/blog/%s' % str(post.key().id()))            
+    
 class DeleteComment(BlogHandler):
     def get(self, post_id, comment_id):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
@@ -383,10 +408,11 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/welcome', Welcome),
                                ('/blog/?', BlogFront),
                                ('/blog/([0-9]+)', PostPage),
-                               ('/blog/newpost', NewPost),
+                               ('/blog/newpost', NewPost),                        
                                ('/blog/deletepost/([0-9]+)', DeletePost),
                                ('/blog/editpost/([0-9]+)', EditPost),
                                ('/blog/likepost/([0-9]+)', LikePost),
+                               ('/blog/addcomment/([0-9]+)', AddComment),
                                ('/blog/deletecomment/([0-9]+)/([0-9]+)', DeleteComment),
                                ('/signup', Register),
                                ('/login', Login),
