@@ -192,7 +192,7 @@ class NewPost(BlogHandler):
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
-            error = "subject and content, please!"
+            error = "Subject and content, please!"
             self.render("newpost.html", subject=subject, content=content, error=error)
 
 class EditPost(BlogHandler):

@@ -176,6 +176,21 @@ h6, .h6 {
 }
 
 
+/* Configured by me */ 
+span.btn:hover {
+  cursor: initial;
+  background-color: #5bc0de;
+}
+
+h1.h1-post {
+  border-radius: 10px;
+  padding: 20px 30px;
+  margin-bottom: 40px;
+}
+
+div.error.bg-danger {
+  margin-bottom: 40px;
+}
 
 
 /*
