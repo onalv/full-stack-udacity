@@ -5,10 +5,12 @@
   <a class="btn btn-info" href="/blog/likepost/{{p.key().id()}}"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {{p.number_likes}}</a>
 
   {% if p.comments %}
+    <h4>Comments:</h4>
     {% for comment in p.comments %}
-      <h4>Comment #{{loop.index}}</h4>
       <p class="bg-info p-comment" id="{{loop.index}}">{{comment}}</p>
-      <a href="/blog/deletecomment/{{p.key().id()}}/{{loop.index - 1}}" class="btn btn-warning btn-sm">Delete comment</a>
+      <span class="bg-warning span-warning">Comment by: {{p.comment_by_list[loop.index - 1]}}</span>
+      <a href="/blog/editcomment/{{p.key().id()}}/{{loop.index - 1}}" class="btn btn-warning btn-sm">Edit comment</a>
+      <a href="/blog/deletecomment/{{p.key().id()}}/{{loop.index - 1}}" class="btn btn-danger btn-sm">Delete comment</a>
     {% endfor %}
   {% endif %}
 

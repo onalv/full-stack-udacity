@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <div class="blog-post">
+  
+    <h2 class="blog-post-title">{{p.subject}}</h2>
+    <p class="blog-post-meta">{{p.created.strftime("%b %d, %Y")}} by {{p.created_by}}</p>
+    <p>{{p.content}}</p>
+    <span class="btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {{p.number_likes}}</span>
+    <hr>
+
+
+    {% if p.comments %}
+      {% for comment in p.comments %}
+
+        {% if (loop.index - 1) == comment_index %}
+            <form method="post">
+              <div class="form-group">        
+                <textarea class="form-control" name="comment" rows="10">{{comment}}</textarea>
+              </div>
+              <div class="error">{{error}}</div>
+              <input type="submit" class="btn btn-primary btn-sm">
+              <a href="/" class="btn btn-danger btn-sm">Cancel</a>
+            </form>
+        {% else %}          
+          <p class="bg-info p-comment" id="{{loop.index}}">{{comment}}</p>
+          <span class="bg-warning span-warning">Comment by: {{p.comment_by_list[loop.index - 1]}}</span>
+          <br><br>
+        {% endif %}
+
+      {% endfor %}
+    {% endif %}
+
+  </div>
+
+{% endblock %}

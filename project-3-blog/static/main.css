@@ -187,7 +187,14 @@ div.error.bg-danger {
 }
 
 .p-comment {
-  margin: 10px 0;
+  margin: 15px 0 0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: dimgray;
+}
+
+.span-warning {
+  margin: 0;
   padding: 5px 10px;
   border-radius: 5px;
   color: dimgray;

@@ -10,13 +10,22 @@
     <span class="btn btn-info"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> {{p.number_likes}}</span>
     <hr>
 
+    {% if p.comments %}
+      {% for comment in p.comments %}
+        <p class="bg-info p-comment" id="{{loop.index}}">{{comment}}</p>
+        <span class="bg-warning span-warning">Comment by: {{p.comment_by_list[loop.index - 1]}}</span>
+      {% endfor %}
+    {% endif %}
+
+    <hr><hr>
     <form method="post">
       <div class="form-group">
         <label>Add comment</label>
         <textarea class="form-control" name="comment"></textarea>
       </div>
       <div class="error">{{error}}</div>
-      <input type="submit" class="btn btn-primary btn-lg">
+      <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+      <a href="/" class="btn btn-danger btn-sm">Cancel</a>
     </form>
 
   </div>

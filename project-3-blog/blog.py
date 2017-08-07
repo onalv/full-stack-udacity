@@ -137,7 +137,8 @@ class Post(db.Model):
     created_by = db.StringProperty(required = True)
     number_likes = db.IntegerProperty(required = True) 
     liked_by = db.StringListProperty(required = True) 
-    comments = db.ListProperty(db.Text, required = True)  
+    comments = db.ListProperty(db.Text, required = True)
+    comment_by_list = db.StringListProperty(required = True)  
 
     def render(self):
         self._render_text = self.content.replace('\n', '<br>')
@@ -184,10 +185,11 @@ class NewPost(BlogHandler):
         number_likes = 0
         liked_by = []
         comments = []
+        comment_by_list = []
         #comments.append(first_comment)
 
         if subject and content:
-            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by, number_likes = number_likes, liked_by = liked_by, comments = comments)
+            p = Post(parent = blog_key(), subject = subject, content = content, created_by = created_by, number_likes = number_likes, liked_by = liked_by, comments = comments, comment_by_list = comment_by_list)
             p.put()
             self.redirect('/blog/%s' % str(p.key().id()))
         else:
@@ -196,14 +198,21 @@ class NewPost(BlogHandler):
 
 class EditPost(BlogHandler):
     def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        if self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        if not post:
-            self.error(404)
-            return
+            if self.user.name != post.created_by:
+                error = 'That is not possible. You did not create this Post. Only author can edit it!'
+                self.render("error.html", error = error)
 
-        self.render("edit.html", p = post)
+            if not post:
+                self.error(404)
+                return
+
+            self.render("edit.html", p = post)
+        else:
+            self.redirect("/login")
     
     def post(self, post_id):
         if not self.user:
@@ -233,26 +242,32 @@ class EditPost(BlogHandler):
 
 class DeletePost(BlogHandler):
     def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        if self.user: 
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        if self.user and self.user.name==post.created_by:
-            post.delete()
-            self.redirect('/blog')
+            if self.user and self.user.name==post.created_by:
+                post.delete()
+                self.redirect('/blog')
+            else: 
+                error = 'That is not possible. You did not create this Post. Only author can delete it!'
+                self.render("error.html", error = error)
         else: 
-            error = 'That is not possible. You did not create this Post. Only author can delete it!'
-            self.render("error.html", error = error)
+            self.redirect("/login")
 
 class AddComment(BlogHandler): 
     def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        if self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        if not post:
-            self.error(404)
-            return
+            if not post:
+                self.error(404)
+                return
 
-        self.render("add-comment.html", p = post)
+            self.render("add-comment.html", p = post)
+        else: 
+            self.redirect("/login")
 
     def post(self, post_id):
         if not self.user:
@@ -261,37 +276,84 @@ class AddComment(BlogHandler):
         key = db.Key.from_path('Post', int(post_id), parent=blog_key())
         post = db.get(key)
 
+        #I create data at the same index for both lists, this way I can relate who created which comment
         comment = db.Text(self.request.get('comment'))
+        comment_by = self.user.name
 
         if comment:
             post.comments.append(comment)
+            post.comment_by_list.append(comment_by)
             post.put()
-            self.redirect('/blog/%s' % str(post.key().id()))            
-    
+            self.redirect('/blog/%s' % str(post.key().id()))   
+
+class EditComment(BlogHandler):
+    def get(self, post_id, comment_id):
+        if self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+
+            if not post:
+                self.error(404)
+                return
+
+            if post.comment_by_list[int(comment_id)] == self.user.name:
+                self.render("edit-comment.html", p = post, comment_index = int(comment_id))                
+            else:
+                error = 'That is not possible. You can not edit others comment!'
+                self.render("error.html", error = error)            
+        else: 
+            self.redirect("/login")   
+    def post(self, post_id, comment_id):
+        if not self.user:
+            self.redirect('/blog')
+        else:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
+
+        if post.comment_by_list[int(comment_id)] == self.user.name:
+            comment = db.Text(self.request.get('comment'))
+
+            if comment:
+                post.comments[int(comment_id)] = comment
+                post.put()
+                self.redirect('/blog/%s' % str(post.key().id()))
+
 class DeleteComment(BlogHandler):
     def get(self, post_id, comment_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        if self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        post.comments.pop(int(comment_id))
-        post.put()
-        self.redirect('/blog/%s' % str(post.key().id()))
+            #Will erase if comment was created by the user only.
+            if post.comment_by_list[int(comment_id)] == self.user.name:
+                post.comments.pop(int(comment_id))
+                post.comment_by_list.pop(int(comment_id))
+                post.put()
+                self.redirect('/blog/%s' % str(post.key().id()))
+            else:
+                error = 'That is not possible. You can not delete others comment!'
+                self.render("error.html", error = error)
+        else:
+            self.redirect("/login")
 
 class LikePost(BlogHandler):
     def get(self, post_id):
-        key = db.Key.from_path('Post', int(post_id), parent=blog_key())
-        post = db.get(key)
+        if self.user:
+            key = db.Key.from_path('Post', int(post_id), parent=blog_key())
+            post = db.get(key)
 
-        #if is not own post and post haven't been already given a like by actual user then like post
-        if self.user.name != post.created_by and self.user.name not in post.liked_by:
-            post.number_likes = post.number_likes + 1
-            post.liked_by.append(self.user.name)
-            post.put()
+            #if is not own post and post haven't been already given a like by actual user then like post
+            if self.user.name != post.created_by and self.user.name not in post.liked_by:
+                post.number_likes = post.number_likes + 1
+                post.liked_by.append(self.user.name)
+                post.put()
 
-            self.redirect('/blog/%s' % str(post.key().id()))
+                self.redirect('/blog/%s' % str(post.key().id()))
+            else:
+                error = 'That is not possible. You can not like your own post neither can you like a post more than once!'
+                self.render("error.html", error = error)
         else:
-            error = 'That is not possible. You can not like your own post neither can you like a post more than once!'
-            self.render("error.html", error = error)
+            self.redirect("/login")
 
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 def valid_username(username):
@@ -354,7 +416,6 @@ class Register(Signup):
             u.put()
 
             self.login(u)
-            #self.redirect('/blog')
             self.redirect('/welcome')
 
 class Login(BlogHandler):
@@ -384,7 +445,7 @@ class Welcome(BlogHandler):
         if self.user:
             self.render('welcome.html', username = self.user.name)
         else:
-            self.redirect('/signup')
+            self.redirect('/login')
 
 app = webapp2.WSGIApplication([('/', MainPage),
                                ('/welcome', Welcome),
@@ -395,6 +456,7 @@ app = webapp2.WSGIApplication([('/', MainPage),
                                ('/blog/editpost/([0-9]+)', EditPost),
                                ('/blog/likepost/([0-9]+)', LikePost),
                                ('/blog/addcomment/([0-9]+)', AddComment),
+                               ('/blog/editcomment/([0-9]+)/([0-9]+)', EditComment),
                                ('/blog/deletecomment/([0-9]+)/([0-9]+)', DeleteComment),
                                ('/signup', Register),
                                ('/login', Login),
