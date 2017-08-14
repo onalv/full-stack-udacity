@@ -8,6 +8,7 @@ CREATE DATABASE tournament;
 
 CREATE TABLE players (
 	name text,
+	played integer DEFAULT 0,
 	won integer DEFAULT 0,
 	lost integer DEFAULT 0,
 	id serial primary key

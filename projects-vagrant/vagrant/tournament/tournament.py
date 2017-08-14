@@ -69,6 +69,15 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    list_standings = []
+    conn = connect()
+    c = conn.cursor()
+    c.execute("SELECT * FROM ordered_by_wins;")
+    results = c.fetchall()
+    for row in results:
+        list_standings.append((row[4], row[0], row[2], row[1]))
+    conn.close()
+    return list_standings
 
 
 def reportMatch(winner, loser):
@@ -78,7 +87,15 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
- 
+    conn = connect()
+    c = conn.cursor()
+    c.execute("INSERT INTO matches VALUES (%s, %s)", (winner,loser,))
+    #update number of matches played for the players
+    c.execute("UPDATE players SET ")
+    
+    conn.commit()
+    conn.close()
+    return 0
  
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
