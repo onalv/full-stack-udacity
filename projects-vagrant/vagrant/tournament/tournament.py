@@ -17,6 +17,11 @@ def deleteMatches():
     c = conn.cursor()
     c.execute("DELETE FROM matches;")
     conn.commit()
+
+    #set numbers of losses, winnings and games played to zero when matches deleted
+    c.execute("UPDATE players SET played = 0, won = 0, lost = 0")
+    conn.commit()
+
     conn.close()
     return 0
 
@@ -72,10 +77,15 @@ def playerStandings():
     list_standings = []
     conn = connect()
     c = conn.cursor()
+
+    #get players list orderd by wins with a VIEW created in tournament.sql
     c.execute("SELECT * FROM ordered_by_wins;")
     results = c.fetchall()
+    
+    #create list as per request with the data from the database
     for row in results:
         list_standings.append((row[4], row[0], row[2], row[1]))
+
     conn.close()
     return list_standings
 
@@ -89,11 +99,31 @@ def reportMatch(winner, loser):
     """
     conn = connect()
     c = conn.cursor()
+
+    #add match to matches table
     c.execute("INSERT INTO matches VALUES (%s, %s)", (winner,loser,))
-    #update number of matches played for the players
-    c.execute("UPDATE players SET ")
-    
     conn.commit()
+    
+    #update winnings for winner in players table
+    c.execute("SELECT played, won FROM players WHERE id = %s", (winner,))
+    result = c.fetchone()
+    played = result[0]
+    played = played + 1
+    won = result[1]
+    won = won + 1
+    c.execute("UPDATE players SET played = %s, won = %s WHERE id = %s", (played, won, winner,))
+    conn.commit()
+
+    #Update losses for loser in players table
+    c.execute("SELECT played, lost FROM players WHERE id = %s", (loser,))
+    result = c.fetchone()
+    played = result[0]
+    played = played + 1
+    lost = result[1]
+    lost = lost + 1
+    c.execute("UPDATE players SET played = %s, lost = %s WHERE id = %s", (played, lost, loser,))
+    conn.commit()
+   
     conn.close()
     return 0
  
@@ -112,5 +142,16 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    pairings = []
+    conn = connect()
+    c = conn.cursor()
 
+    #get players list orderd by wins with a VIEW created in tournament.sql
+    c.execute("SELECT * FROM ordered_by_wins")
+    results = c.fetchall()
+   
+    #create the list with the pair of players
+    for x in xrange(0, len(results), 2):
+        pairings.append((results[x][4], results[x][0], results[x+1][4], results[x+1][0])) 
 
+    return pairings
