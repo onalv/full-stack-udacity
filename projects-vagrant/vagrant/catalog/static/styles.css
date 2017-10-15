@@ -13,13 +13,13 @@ ul {
 	padding-left: 0;
 }
 
-li {
+li>a {
 	font-size: 22px;
 	color: red;
 	font-weight: bold;
 }
 
-li>span {
+li>a>span {
 	font-size: 18px;
 	color: black;
 	font-weight: normal;

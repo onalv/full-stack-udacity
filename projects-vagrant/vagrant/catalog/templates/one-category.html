@@ -7,7 +7,7 @@
 		{% if categories %}
 		<ul>
 			{% for category in categories %}
-			<li>{{ category.name }}</li>
+			<li><a href="/catalog/{{category.name}}/items">{{ category.name }}</a></li>
 			{% endfor %}
 		</ul>
 		{% endif %}
@@ -17,7 +17,7 @@
 		{% if itemsCategory %}
 		<ul>
 			{% for item in itemsCategory %}
-			<li>{{ item.name }}</li>
+			<li><a href="/catalog/{{item.category.name}}/{{item.name}}">{{ item.name }} <span>({{ item.category.name }})</span></a></li>
 			{% endfor %}
 		</ul>
 		{% endif %}

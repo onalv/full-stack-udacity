@@ -12,7 +12,7 @@
   <body>
   	<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   		<div class="container">
-		  <a class="navbar-brand" href="#">Item Catalog</a>
+		  <a class="navbar-brand" href="/">Item Catalog</a>
 		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 		    <span class="navbar-toggler-icon"></span>
 		  </button>
@@ -26,13 +26,20 @@
 		        <a class="nav-link" href="#">Link</a>
 		      </li>
 		    </ul>
-		    <a href="" class="btn btn-success">Login</a>
+		    <!-- <a href="/login" class="btn btn-success" id="signinButton">Login</a> -->
+
+        {%if 'username' not in session %}
+          <a href="{{url_for('showLogin')}}" class="btn btn-success">Login</a>
+        {% else %}
+          <a href="{{url_for('disconnect')}}" class="btn btn-danger">Logout</a>
+        {% endif %}
+
 		  </div>
 		</div>
 	</nav>
     <div class="container p-3" id="main-container">
     	{% block content %}
-		{% endblock %}
+		  {% endblock %}
     </div>
 
     <!-- Optional JavaScript -->
@@ -40,5 +47,10 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<!--     <script type="text/javascript">
+      if (authResult['code']) {
+        $('#signinButton').attr('style', 'display: none');
+      }
+    </script> -->
   </body>
 </html>

@@ -17,7 +17,7 @@
 		{% if items %}
 		<ul>
 			{% for item in items %}
-			<li>{{ item.name }} <span>({{ item.category.name }})</span></li>
+			<li><a href="/catalog/{{item.category.name}}/{{item.name}}">{{ item.name }} <span>({{ item.category.name }})</span></a></li>
 			{% endfor %}
 		</ul>
 		{% endif %}
