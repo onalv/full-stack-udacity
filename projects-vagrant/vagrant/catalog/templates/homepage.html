@@ -17,7 +17,7 @@
 		{% if items %}
 		<ul>
 			{% for item in items %}
-			<li>{{ item.name }}</li>
+			<li>{{ item.name }} <span>({{ item.category.name }})</span></li>
 			{% endfor %}
 		</ul>
 		{% endif %}
