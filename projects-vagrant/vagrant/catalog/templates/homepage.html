@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="col-3">
+		<h2 class="text-primary">Categories</h2>
+		{% if categories %}
+		<ul>
+			{% for category in categories %}
+			<li>{{ category.name }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
+	<div class="col-9">
+		<h2 class="text-primary">Latest Items</h2>
+		{% if items %}
+		<ul>
+			{% for item in items %}
+			<li>{{ item.name }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
+</div>
+
+{% endblock %}
