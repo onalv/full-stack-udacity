@@ -288,12 +288,19 @@ session = DBSession()
 def homepage():
 	categories = session.query(Category).order_by(asc(Category.name))
 	items = session.query(Item).order_by(asc(Item.name))
-	users = session.query(User).order_by(asc(User.name))
-	return render_template('homepage.html', categories=categories, items=items, users=users)
+	return render_template('homepage.html', categories=categories, items=items)
 	# if 'username' not in login_session:
 	# 	return render_template('publicrestaurants.html', restaurants=restaurants)
 	# else:
 	# 	return render_template('restaurants.html', restaurants=restaurants)
+
+@app.route('/catalog/<category>/items')
+def oneCategory(category):
+	categories = session.query(Category).order_by(asc(Category.name))
+	
+	category = session.query(Category).filter_by(name=category).one()
+	itemsCategory = session.query(Item).filter_by(category_id=category.id).all()
+	return render_template('one-category.html', categories=categories, itemsCategory=itemsCategory, category=category)
 
 # Create a new restaurant
 
