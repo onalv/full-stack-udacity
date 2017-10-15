@@ -287,6 +287,12 @@ def homepage():
 	# 	return render_template('publicrestaurants.html', restaurants=restaurants)
 	# else:
 	# 	return render_template('restaurants.html', restaurants=restaurants)
+@app.route('/catalog/items/add', methods=['GET', 'POST'])
+def addItem():
+	if request.method == 'GET':
+		return render_template('add-item.html')
+	else:
+		return 'posting'
 
 #See specific category
 @app.route('/catalog/<category>/items')
@@ -301,7 +307,6 @@ def oneCategory(category):
 @app.route('/catalog/<category>/<item>')
 def oneItem(category, item):
 	itemDatabase = session.query(Item).filter_by(name=item).one()
-	# description = itemDatabase.description
 	return render_template('one-item.html', item=itemDatabase)
 
 # Create a new restaurant
