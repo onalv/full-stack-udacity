@@ -5,6 +5,9 @@
 	<div class="col-12">
 		<h2 class="text-primary">{{item.name}}</h2>
 		<p><strong>Description:</strong> {{item.description}}</p>	
+		{% if session['username'] %}
+			<a href="">Edit</a> | <a href="/catalog/{{item.name}}/delete">Delete</a>
+		{% endif %}
 	</div>
 </div>
 

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item, User
 from flask import session as login_session
@@ -282,15 +282,13 @@ def createUser(login_session):
 @app.route('/')
 def homepage():
 	categories = session.query(Category).order_by(asc(Category.name))
-	items = session.query(Item).order_by(asc(Item.name))
+	items = session.query(Item).order_by(desc(Item.id))
 	if 'username' in login_session:
 		return render_template('homepage.html', categories=categories, items=items, username=login_session['username'])
 	else:
 		return render_template('homepage.html', categories=categories, items=items)
-	# if 'username' not in login_session:
-	# 	return render_template('publicrestaurants.html', restaurants=restaurants)
-	# else:
-	# 	return render_template('restaurants.html', restaurants=restaurants)
+
+#Add new Item
 @app.route('/catalog/items/add', methods=['GET', 'POST'])
 def addItem():
 	if request.method == 'GET':
@@ -306,6 +304,17 @@ def addItem():
 		flash('New item added!')
 		return redirect(url_for('homepage'))
 
+#Delete Item
+@app.route('/catalog/<item>/delete', methods=['GET', 'POST'])
+def deleteItem(item):
+	itemToDelete = session.query(Item).filter_by(name=item).one()
+	if request.method == 'GET':
+		return render_template('delete-item.html', item=itemToDelete)
+	if request.method == 'POST':
+		session.delete(itemToDelete)
+		flash('%s Successfully Deleted' % itemToDelete.name)
+		session.commit()
+		return redirect(url_for('homepage'))
 
 #See specific category
 @app.route('/catalog/<category>/items')

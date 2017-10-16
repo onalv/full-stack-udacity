@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+{% block content %}
+
+<div class="row">
+	<div class="col-12">
+		<h2 class="text-danger">Delete Item</h2>
+		<p>Are you sure you want to delete <strong id="name">{{ item.name }}</strong>?</p>
+		
+		<form action="#" method="post">	
+			<button type="submit" class="btn btn-danger">Delete</button>
+			<a href="/catalog/{{item.category.name}}/{{item.name}}" class="btn btn-info">Cancel</a>
+		</form>
+	</div>
+</div>
+
+{% endblock %}
