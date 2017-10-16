@@ -1,6 +1,18 @@
 {% extends "main.html" %}
 {% block content %}
 
+{% with messages = get_flashed_messages() %}
+    {% if messages %}	 
+    	<div>        
+ 	       <ul>
+    	    {% for message in messages %}
+        	    <li class="alert alert-success flash" role="alert"> <strong> {{ message }} </strong> </li>
+        	{% endfor %}
+        	</ul>
+		</div>
+    {% endif %}
+{% endwith %}
+
 <div class="row">
 	<div class="col-3">
 		<h2 class="text-primary">Categories</h2>

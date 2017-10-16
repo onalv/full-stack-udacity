@@ -290,9 +290,18 @@ def homepage():
 @app.route('/catalog/items/add', methods=['GET', 'POST'])
 def addItem():
 	if request.method == 'GET':
-		return render_template('add-item.html')
+		categories = session.query(Category).all()
+		return render_template('add-item.html', categories=categories)
 	else:
-		return 'posting'
+		# title = request.form['title']
+		# description = request.form['description']
+		# category = request.form['category']
+		newItem = Item(user_id=login_session['user_id'], name=request.form['title'], description=request.form['description'], category_id=request.form['category'])
+		session.add(newItem)
+		session.commit()
+		flash('New item added!')
+		return redirect(url_for('homepage'))
+
 
 #See specific category
 @app.route('/catalog/<category>/items')
