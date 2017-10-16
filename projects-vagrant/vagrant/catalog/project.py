@@ -304,6 +304,23 @@ def addItem():
 		flash('New item added!')
 		return redirect(url_for('homepage'))
 
+#Edit Item
+@app.route('/catalog/<item>/edit', methods=['GET', 'POST'])
+def editItem(item):
+	categories = session.query(Category).all()
+	itemToEdit = session.query(Item).filter_by(name=item).one()
+	if request.method == 'GET':
+		return render_template('edit-item.html', item=itemToEdit, categories=categories)
+	if request.method == 'POST':
+		editedItem = Item(user_id=login_session['user_id'], name=request.form['title'], description=request.form['description'], category_id=request.form['category'])
+		session.delete(itemToEdit)
+		session.commit()
+		session.add(editedItem)
+		session.commit()
+		flash('%s Successfully Edited' % itemToEdit.name)
+		session.commit()
+		return redirect(url_for('homepage'))
+
 #Delete Item
 @app.route('/catalog/<item>/delete', methods=['GET', 'POST'])
 def deleteItem(item):
