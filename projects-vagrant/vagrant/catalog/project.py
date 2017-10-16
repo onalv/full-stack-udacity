@@ -230,6 +230,7 @@ def disconnect():
 	print 'result is '
 	print result
 	if result['status'] == '200':
+		flash('User %s logged out' % login_session['username'])
 		del login_session['access_token']
 		del login_session['gplus_id']
 		del login_session['username']
@@ -282,7 +283,10 @@ def createUser(login_session):
 def homepage():
 	categories = session.query(Category).order_by(asc(Category.name))
 	items = session.query(Item).order_by(asc(Item.name))
-	return render_template('homepage.html', categories=categories, items=items)
+	if 'username' in login_session:
+		return render_template('homepage.html', categories=categories, items=items, username=login_session['username'])
+	else:
+		return render_template('homepage.html', categories=categories, items=items)
 	# if 'username' not in login_session:
 	# 	return render_template('publicrestaurants.html', restaurants=restaurants)
 	# else:
