@@ -195,12 +195,17 @@ def addItem():
 	if request.method == 'GET':
 		categories = session.query(Category).all()
 		return render_template('add-item.html', categories=categories)
-	else:
-		newItem = Item(user_id=login_session['user_id'], name=request.form['title'], description=request.form['description'], category_id=request.form['category'])
-		session.add(newItem)
-		session.commit()
-		flash('New item added!')
-		return redirect(url_for('homepage'))
+	if request.method == 'POST':
+		if session.query(Item).filter_by(name=request.form['title']).one():
+			flash('An item with this name already exists in the database! Please select a different name!')
+			categories = session.query(Category).all()
+			return render_template('add-item.html', categories=categories)
+		else:
+			newItem = Item(user_id=login_session['user_id'], name=request.form['title'], description=request.form['description'], category_id=request.form['category'])
+			session.add(newItem)
+			session.commit()
+			flash('New item added!')
+			return redirect(url_for('homepage'))
 
 #Edit Item
 @app.route('/catalog/<item>/edit', methods=['GET', 'POST'])
